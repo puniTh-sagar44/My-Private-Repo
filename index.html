@@ -35,7 +35,6 @@ position:relative;
 font-family:'Cinzel';
 font-size:28px;
 margin-bottom:10px;
-transition:opacity 1s;
 }
 
 .handwriting{
@@ -48,15 +47,15 @@ white-space:pre-line;
 margin-top:10px;
 font-size:14px;
 opacity:0.85;
-transition:opacity 1s;
 }
 
 .buttons{
 position:relative;
-height:120px;
+height:140px;
 margin-top:20px;
 }
 
+/* FIXED BUTTON SPACING */
 button{
 position:absolute;
 padding:12px 24px;
@@ -67,14 +66,14 @@ color:white;
 cursor:pointer;
 }
 
-#yesBtn{left:60px;top:40px;}
-#noBtn{right:60px;top:40px;}
+/* MORE GAP */
+#yesBtn{left:40px;top:50px;}
+#noBtn{right:40px;top:50px;}
 
 video{
 width:100%;
 border-radius:15px;
 margin-top:15px;
-display:block;
 }
 
 .shake{animation:shake .3s;}
@@ -84,7 +83,7 @@ display:block;
 75%{transform:translateX(-6px);}
 }
 
-.fade-out{opacity:0;}
+.fade-out{opacity:0;transition:opacity 1s;}
 </style>
 </head>
 <body>
@@ -121,7 +120,7 @@ setTimeout(()=>page.classList.remove("shake"),300);
 if(navigator.vibrate) navigator.vibrate(80);
 }
 
-/* move safely */
+/* safe move */
 function move(btn){
 const rect=page.getBoundingClientRect();
 const maxX=rect.width-btn.offsetWidth-10;
@@ -131,12 +130,12 @@ btn.style.left=Math.random()*maxX+"px";
 btn.style.top=Math.random()*maxY+"px";
 }
 
-/* NOPE button */
+/* NOPE */
 let clicks=0;
 noBtn.onclick=()=>{
 feedback();
-clicks++;
 
+clicks++;
 noBtn.style.position="absolute";
 move(noBtn);
 
@@ -155,17 +154,13 @@ function anniversary(){
 
 page.innerHTML=`
 <div class="anniversary" id="date">6th May 2026</div>
-<div class="subtitle" id="suspense">
-Something beautiful is about to unfold...
-</div>
+<div class="subtitle">Something beautiful is about to unfold...</div>
 `;
 
-/* fade suspense before transition */
 setTimeout(()=>{
-document.getElementById("suspense").classList.add("fade-out");
+document.querySelector(".subtitle").classList.add("fade-out");
 },3500);
 
-/* change to anniversary */
 setTimeout(()=>{
 const el=document.getElementById("date");
 el.classList.add("fade-out");
@@ -177,14 +172,14 @@ el.classList.remove("fade-out");
 
 },4000);
 
-/* next screen */
 setTimeout(()=>{
 page.innerHTML=`
 <div class="anniversary">HAPPY 6TH LOVE ANNIVERSARY 💞</div>
 <p>Wanna Time Travel?</p>
+
 <div class="buttons">
-<button id="yes2">YES</button>
-<button id="no2">NO</button>
+<button id="yes2" style="left:40px;top:50px;">YES</button>
+<button id="no2" style="right:40px;top:50px;">NO</button>
 </div>
 `;
 
@@ -195,11 +190,13 @@ let c=0;
 btn.onclick=()=>{
 feedback();
 c++;
+
 btn.style.position="absolute";
 move(btn);
 
 let s=1-(c*0.08);
 if(s<0.3)s=0.3;
+
 btn.style.transform=`scale(${s})`;
 
 if(c>=10) btn.style.display="none";
@@ -212,14 +209,13 @@ document.getElementById("yes2").onclick=()=>showYear(2021);
 },10000);
 }
 
-/* YEAR TEXT FIXED */
+/* YEAR TEXT */
 const textsMap={
 2021:"Let’s move to 2021-2022 💫",
 2022:"Now entering 2022-2023 ❤️",
 2023:"Stepping into 2023-2024 👣",
 2024:"Moving ahead to 2024-2025 💞",
-2025:"Next stop 2025-2026 🫂",
-2026:"Our journey continues..."
+2025:"Next stop 2025-2026 🫂"
 };
 
 /* YEARS */
@@ -228,15 +224,34 @@ function showYear(year){
 if(year>2026){ending();return;}
 
 let title=year===2026?"2026":(year-1)+"-"+year;
-let text=textsMap[year];
+let text=textsMap[year] || "";
+
+if(year===2026){
+page.innerHTML=`
+<div class="anniversary">2026</div>
+<video autoplay controls>
+<source src="2026.mp4">
+</video>
+
+<p>This is the end??</p>
+
+<div class="buttons">
+<button onclick="ending()" style="left:40px;top:50px;">Definitely NOT</button>
+<button onclick="ending()" style="right:40px;top:50px;">Not this time</button>
+</div>
+`;
+return;
+}
 
 page.innerHTML=`
 <div class="anniversary">${title}</div>
 <video autoplay controls>
 <source src="${year}.mp4">
 </video>
+
 <p>${text}</p>
-<button onclick="showYear(${year+1})">NEXT ➜</button>
+
+<button onclick="showYear(${year+1})" style="margin-top:15px;">NEXT ➜</button>
 `;
 }
 
