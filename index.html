@@ -32,34 +32,28 @@ text-align:center;
 color:white;
 position:relative;
 transition:.6s ease;
-opacity:1;
-transform:scale(1);
 }
+
 .hide{opacity:0;transform:scale(.92);}
 
 .anniversary{
 font-family:'Cinzel',serif;
 font-size:30px;
-letter-spacing:2px;
 margin-bottom:15px;
 transition:opacity 1s ease;
 }
 
-.fade-out{opacity:0;}
-.fade-in{opacity:1;}
-
 .handwriting{
 font-family:'Dancing Script',cursive;
-font-size:38px;
-margin-bottom:10px;
+font-size:34px;
+line-height:1.5;
 }
 
-.subtitle{margin-bottom:20px;opacity:.95;}
+.subtitle{margin-bottom:20px;}
 
 .buttons{
 display:flex;
 justify-content:center;
-align-items:center;
 gap:20px;
 margin-top:20px;
 position:relative;
@@ -75,25 +69,14 @@ cursor:pointer;
 color:white;
 background:linear-gradient(145deg,#ff4e50,#ff758c);
 box-shadow:0 8px 0 #c93c5c;
-transition:.2s;
 }
-button:active{box-shadow:0 3px 0 #c93c5c;transform:translateY(5px);}
 
 video{width:100%;border-radius:18px;margin:15px 0;}
 
-.shake{animation:shake .4s;}
-@keyframes shake{
-25%{transform:translateX(-10px);}
-50%{transform:translateX(10px);}
-75%{transform:translateX(-8px);}
-}
-
-canvas{position:fixed;top:0;left:0;pointer-events:none;}
+.fade-out{opacity:0;}
 </style>
 </head>
 <body>
-
-<canvas id="fireworks"></canvas>
 
 <div class="glass" id="page">
 
@@ -116,19 +99,17 @@ const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const oops=document.getElementById("oops");
 
+/* ---------- SCENE CHANGE ---------- */
 function changeScene(html){
 page.classList.add("hide");
 setTimeout(()=>{page.innerHTML=html;page.classList.remove("hide");},500);
 }
 
-/* ---------- FIRST PAGE NO BUTTON ---------- */
+/* ---------- NO BUTTON ---------- */
 let scale=1,floating=false;
 noBtn.onclick=()=>{
 oops.currentTime=0;
 oops.play();
-
-page.classList.add("shake");
-setTimeout(()=>page.classList.remove("shake"),400);
 
 if(!floating){
 noBtn.style.position="absolute";
@@ -141,27 +122,20 @@ if(scale<0.2) scale=0.2;
 noBtn.style.transform=`scale(${scale})`;
 
 let r=page.getBoundingClientRect();
-let maxX=r.width-noBtn.offsetWidth-20;
-let maxY=r.height-noBtn.offsetHeight-20;
-
-noBtn.style.left=Math.random()*maxX+"px";
-noBtn.style.top=Math.random()*maxY+"px";
+noBtn.style.left=Math.random()*(r.width-noBtn.offsetWidth)+"px";
+noBtn.style.top=Math.random()*(r.height-noBtn.offsetHeight)+"px";
 
 if(scale<=0.2) noBtn.style.display="none";
 };
 
-/* ---------- YES CLICK ---------- */
-yesBtn.onclick=()=>{
-multiFireworks();
-setTimeout(()=>anniversary(),1200);
-};
+/* ---------- YES ---------- */
+yesBtn.onclick=()=>setTimeout(()=>anniversary(),1000);
 
-/* ---------- ANNIVERSARY SCENE ---------- */
+/* ---------- ANNIVERSARY ---------- */
 function anniversary(){
 
 changeScene(`
 <div class="anniversary" id="dateText">6th May 2026</div>
-<div class="subtitle">Something special is about to unfold...</div>
 `);
 
 setTimeout(()=>{
@@ -169,157 +143,89 @@ const el=document.getElementById("dateText");
 el.classList.add("fade-out");
 
 setTimeout(()=>{
-el.innerHTML="<span style='font-size:32px;'>6th</span> Love Anniversary 💞";
+el.innerHTML="<span>6th</span> Love Anniversary 💞";
 el.classList.remove("fade-out");
-el.classList.add("fade-in");
 },800);
 
 },4000);
 
+/* STAY LONGER */
 setTimeout(()=>{
 changeScene(`
 <div class="anniversary">HAPPY 6TH LOVE ANNIVERSARY MY HEARTBEAT 💞</div>
 <div class="subtitle">Wanna Time Travel?</div>
 <div class="buttons">
 <button onclick="showYear(2021)">YES</button>
-<button id="noBtn2">NO</button>
 </div>
 `);
-setTimeout(setNo2,600);
-},6500);
+},10000);
 }
 
-/* ---------- SECOND PAGE NO BUTTON ---------- */
-function setNo2(){
-let btn=document.getElementById("noBtn2");
-let s=1,f=false;
-
-btn.onclick=()=>{
-oops.currentTime=0;
-oops.play();
-
-page.classList.add("shake");
-setTimeout(()=>page.classList.remove("shake"),400);
-
-if(!f){
-btn.style.position="absolute";
-f=true;
-}
-
-s-=0.03;
-if(s<0.2) s=0.2;
-
-btn.style.transform=`scale(${s})`;
-
-let r=page.getBoundingClientRect();
-btn.style.left=Math.random()*(r.width-btn.offsetWidth-20)+"px";
-btn.style.top=Math.random()*(r.height-btn.offsetHeight-20)+"px";
-
-if(s<=0.2) btn.style.display="none";
-};
-}
-
-/* ---------- YEARS ---------- */
+/* ---------- UNIQUE TEXT ---------- */
 const lines=[
-"Let’s step into",
-"Ready for another memory?",
-"Come… let’s relive",
-"One more year together?",
-"Let’s not stop here…",
-"Our story continues in"
+"Let’s step into 2021-2022 💫",
+"Another year of us ❤️",
+"Memories continue in 2022-2023",
+"One more chapter together",
+"Still not enough… 2024 awaits",
+"Our journey keeps growing"
 ];
 
+let lineIndex=0;
+
+/* ---------- YEARS ---------- */
 function showYear(year){
 
 if(year>2026){ending();return;}
 
-let next=year+1;
-let previous=year-1;
-let title=year===2026?"2026":`${previous}-${year}`;
-let text=lines[Math.floor(Math.random()*lines.length)];
+let title=year===2026?"2026":`${year-1}-${year}`;
+let text=lines[lineIndex++] || "Let's continue 💖";
 
 changeScene(`
 <div class="anniversary">${title} 💫</div>
 <video autoplay controls>
-<source src="${year}.mp4" type="video/mp4">
+<source src="${year}.mp4">
 </video>
 ${year<2026 ?
-`<div class="subtitle">${text} ${year}-${next} 💖</div>
+`<div class="subtitle">${text}</div>
 <div class="buttons">
-<button onclick="showYear(${next})">YES</button>
+<button onclick="showYear(${year+1})">Next ➜</button>
 </div>`
 :
 `<div class="subtitle">This is the end??</div>
 <div class="buttons">
 <button onclick="ending()">Definitely NOT</button>
-<button onclick="ending()">Not this time</button>
 </div>`
 }
 `);
 }
 
+/* ---------- TYPING EFFECT ---------- */
+function typeText(text,element,speed=40){
+let i=0;
+element.innerHTML="";
+function type(){
+if(i<text.length){
+element.innerHTML+=text.charAt(i);
+i++;
+setTimeout(type,speed);
+}
+}
+type();
+}
+
 /* ---------- FINAL ---------- */
 function ending(){
-multiFireworks();
+
+changeScene(`<div class="handwriting" id="finalText"></div>`);
+
 setTimeout(()=>{
-changeScene(`
-<div class="handwriting">
-This isn't gonna end until we are alive.<br><br>
-Let's be together in every phase of life.<br><br>
-I Love You Alot Mommy and I'll love you till I'm alive.
-</div>
-`);
+typeText(
+`This isn't gonna end until we are alive.\n\nLet's be together in every phase of life.\n\nI Love You Alot Mommy and I'll love you till I'm alive.`,
+document.getElementById("finalText"),
+35
+);
 },800);
-}
-
-/* ---------- FIREWORKS ---------- */
-const canvas=document.getElementById("fireworks");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let particles=[];
-
-function burst(x,y){
-for(let i=0;i<80;i++){
-particles.push({
-x,y,
-angle:Math.random()*2*Math.PI,
-speed:Math.random()*5+2,
-alpha:1,
-color:`hsl(${Math.random()*360},100%,60%)`
-});
-}
-}
-
-function multiFireworks(){
-for(let i=0;i<5;i++){
-setTimeout(()=>{
-burst(Math.random()*canvas.width,Math.random()*canvas.height);
-animate();
-},i*300);
-}
-}
-
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-particles.forEach((p,i)=>{
-p.x+=Math.cos(p.angle)*p.speed;
-p.y+=Math.sin(p.angle)*p.speed;
-p.alpha-=0.02;
-
-ctx.globalAlpha=p.alpha;
-ctx.beginPath();
-ctx.arc(p.x,p.y,3,0,Math.PI*2);
-ctx.fillStyle=p.color;
-ctx.fill();
-
-if(p.alpha<=0)particles.splice(i,1);
-});
-
-ctx.globalAlpha=1;
-if(particles.length>0)requestAnimationFrame(animate);
 }
 </script>
 
