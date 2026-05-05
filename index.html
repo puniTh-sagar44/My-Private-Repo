@@ -42,7 +42,11 @@ font-family:'Cinzel',serif;
 font-size:30px;
 letter-spacing:2px;
 margin-bottom:15px;
+transition:opacity 1s ease;
 }
+
+.fade-out{opacity:0;}
+.fade-in{opacity:1;}
 
 .handwriting{
 font-family:'Dancing Script',cursive;
@@ -97,8 +101,6 @@ canvas{position:fixed;top:0;left:0;pointer-events:none;}
 <div class="anniversary">Will You Marry Me, My Sweetheart?</div>
 <div class="subtitle">The NOPE button is funny 😜</div>
 
-<p id="reactionText" style="height:20px;"></p>
-
 <div class="buttons">
 <button id="yesBtn">Definitely 💍</button>
 <button id="noBtn">NOPE 😏</button>
@@ -113,7 +115,6 @@ const page=document.getElementById("page");
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const oops=document.getElementById("oops");
-const reaction=document.getElementById("reactionText");
 
 function changeScene(html){
 page.classList.add("hide");
@@ -121,25 +122,13 @@ setTimeout(()=>{page.innerHTML=html;page.classList.remove("hide");},500);
 }
 
 /* ---------- FIRST PAGE NO BUTTON ---------- */
-
-const reactions=[
-"Oops 😜",
-"Not allowed 😏",
-"Nice try 😂",
-"Hehe caught you 💖",
-"No escape 😎"
-];
-
 let scale=1,floating=false;
-
 noBtn.onclick=()=>{
 oops.currentTime=0;
 oops.play();
 
 page.classList.add("shake");
 setTimeout(()=>page.classList.remove("shake"),400);
-
-reaction.innerText=reactions[Math.floor(Math.random()*reactions.length)];
 
 if(!floating){
 noBtn.style.position="absolute";
@@ -162,14 +151,12 @@ if(scale<=0.2) noBtn.style.display="none";
 };
 
 /* ---------- YES CLICK ---------- */
-
 yesBtn.onclick=()=>{
 multiFireworks();
 setTimeout(()=>anniversary(),1200);
 };
 
 /* ---------- ANNIVERSARY SCENE ---------- */
-
 function anniversary(){
 
 changeScene(`
@@ -178,7 +165,15 @@ changeScene(`
 `);
 
 setTimeout(()=>{
-document.getElementById("dateText").innerHTML="<span style='font-size:32px;'>6th</span> Love Anniversary 💞";
+const el=document.getElementById("dateText");
+el.classList.add("fade-out");
+
+setTimeout(()=>{
+el.innerHTML="<span style='font-size:32px;'>6th</span> Love Anniversary 💞";
+el.classList.remove("fade-out");
+el.classList.add("fade-in");
+},800);
+
 },4000);
 
 setTimeout(()=>{
@@ -195,7 +190,6 @@ setTimeout(setNo2,600);
 }
 
 /* ---------- SECOND PAGE NO BUTTON ---------- */
-
 function setNo2(){
 let btn=document.getElementById("noBtn2");
 let s=1,f=false;
@@ -226,7 +220,6 @@ if(s<=0.2) btn.style.display="none";
 }
 
 /* ---------- YEARS ---------- */
-
 const lines=[
 "Let’s step into",
 "Ready for another memory?",
@@ -266,7 +259,6 @@ ${year<2026 ?
 }
 
 /* ---------- FINAL ---------- */
-
 function ending(){
 multiFireworks();
 setTimeout(()=>{
@@ -281,7 +273,6 @@ I Love You Alot Mommy and I'll love you till I'm alive.
 }
 
 /* ---------- FIREWORKS ---------- */
-
 const canvas=document.getElementById("fireworks");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
