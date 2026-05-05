@@ -21,14 +21,14 @@ overflow:hidden;
 }
 
 .glass{
-width:420px;
+width:90%;
+max-width:420px;
 padding:40px;
 border-radius:25px;
 background:rgba(255,255,255,.18);
 backdrop-filter:blur(20px);
 text-align:center;
 color:white;
-position:relative;
 }
 
 .anniversary{
@@ -49,26 +49,30 @@ font-size:14px;
 opacity:0.85;
 }
 
+/* FIXED BUTTON LAYOUT */
 .buttons{
-position:relative;
-height:140px;
+display:flex;
+justify-content:center;
+gap:20px;
 margin-top:20px;
+flex-wrap:wrap;
 }
 
-/* FIXED BUTTON SPACING */
 button{
-position:absolute;
 padding:12px 24px;
 border:none;
 border-radius:40px;
 background:#ff4e50;
 color:white;
 cursor:pointer;
+min-width:140px;
 }
 
-/* MORE GAP */
-#yesBtn{left:40px;top:50px;}
-#noBtn{right:40px;top:50px;}
+/* CENTER NEXT BUTTON */
+.center-btn{
+display:block;
+margin:20px auto 0;
+}
 
 video{
 width:100%;
@@ -120,28 +124,19 @@ setTimeout(()=>page.classList.remove("shake"),300);
 if(navigator.vibrate) navigator.vibrate(80);
 }
 
-/* safe move */
-function move(btn){
-const rect=page.getBoundingClientRect();
-const maxX=rect.width-btn.offsetWidth-10;
-const maxY=rect.height-btn.offsetHeight-10;
-
-btn.style.left=Math.random()*maxX+"px";
-btn.style.top=Math.random()*maxY+"px";
-}
-
 /* NOPE */
 let clicks=0;
 noBtn.onclick=()=>{
 feedback();
-
 clicks++;
-noBtn.style.position="absolute";
-move(noBtn);
 
 let scale=1-(clicks*0.08);
 if(scale<0.3) scale=0.3;
 noBtn.style.transform=`scale(${scale})`;
+
+noBtn.style.position="relative";
+noBtn.style.left=Math.random()*100-50+"px";
+noBtn.style.top=Math.random()*20-10+"px";
 
 if(clicks>=10) noBtn.style.display="none";
 };
@@ -178,8 +173,8 @@ page.innerHTML=`
 <p>Wanna Time Travel?</p>
 
 <div class="buttons">
-<button id="yes2" style="left:40px;top:50px;">YES</button>
-<button id="no2" style="right:40px;top:50px;">NO</button>
+<button id="yes2">YES</button>
+<button id="no2">NO</button>
 </div>
 `;
 
@@ -191,13 +186,9 @@ btn.onclick=()=>{
 feedback();
 c++;
 
-btn.style.position="absolute";
-move(btn);
-
-let s=1-(c*0.08);
-if(s<0.3)s=0.3;
-
-btn.style.transform=`scale(${s})`;
+btn.style.transform=`scale(${1-(c*0.08)})`;
+btn.style.position="relative";
+btn.style.left=Math.random()*100-50+"px";
 
 if(c>=10) btn.style.display="none";
 };
@@ -223,9 +214,6 @@ function showYear(year){
 
 if(year>2026){ending();return;}
 
-let title=year===2026?"2026":(year-1)+"-"+year;
-let text=textsMap[year] || "";
-
 if(year===2026){
 page.innerHTML=`
 <div class="anniversary">2026</div>
@@ -236,12 +224,15 @@ page.innerHTML=`
 <p>This is the end??</p>
 
 <div class="buttons">
-<button onclick="ending()" style="left:40px;top:50px;">Definitely NOT</button>
-<button onclick="ending()" style="right:40px;top:50px;">Not this time</button>
+<button onclick="ending()">Definitely NOT</button>
+<button onclick="ending()">Not this time</button>
 </div>
 `;
 return;
 }
+
+let title=(year-1)+"-"+year;
+let text=textsMap[year];
 
 page.innerHTML=`
 <div class="anniversary">${title}</div>
@@ -251,7 +242,7 @@ page.innerHTML=`
 
 <p>${text}</p>
 
-<button onclick="showYear(${year+1})" style="margin-top:15px;">NEXT ➜</button>
+<button class="center-btn" onclick="showYear(${year+1})">NEXT ➜</button>
 `;
 }
 
