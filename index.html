@@ -21,8 +21,7 @@ overflow:hidden;
 }
 
 .glass{
-width:95%;
-max-width:520px;
+width:420px; /* fixed for desktop stability */
 padding:40px;
 border-radius:25px;
 background:rgba(255,255,255,.18);
@@ -30,15 +29,12 @@ backdrop-filter:blur(20px);
 text-align:center;
 color:white;
 position:relative;
-display:flex;
-flex-direction:column;
-align-items:center;
 }
 
 .anniversary{
 font-family:'Cinzel';
 font-size:28px;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
 .handwriting{
@@ -48,14 +44,13 @@ white-space:pre-line;
 }
 
 .buttons{
-display:flex;
-justify-content:center;
-gap:20px;
+position:relative;
+height:120px;
 margin-top:20px;
-width:100%;
 }
 
 button{
+position:absolute;
 padding:12px 24px;
 border:none;
 border-radius:40px;
@@ -64,11 +59,20 @@ color:white;
 cursor:pointer;
 }
 
+#yesBtn{left:60px;top:40px;}
+#noBtn{right:60px;top:40px;}
+
 video{
 width:100%;
 border-radius:15px;
 margin-top:15px;
-display:block;
+}
+
+.shake{animation:shake .3s;}
+@keyframes shake{
+25%{transform:translateX(-8px);}
+50%{transform:translateX(8px);}
+75%{transform:translateX(-6px);}
 }
 
 .fade-out{opacity:0;transition:opacity 1s;}
@@ -97,7 +101,18 @@ const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const oops=document.getElementById("oops");
 
-/* SAFE MOVE */
+/* vibration + shake */
+function feedback(){
+oops.currentTime=0;
+oops.play();
+
+page.classList.add("shake");
+setTimeout(()=>page.classList.remove("shake"),300);
+
+if(navigator.vibrate) navigator.vibrate(80);
+}
+
+/* safe move */
 function move(btn){
 const rect=page.getBoundingClientRect();
 
@@ -108,11 +123,10 @@ btn.style.left=Math.random()*maxX+"px";
 btn.style.top=Math.random()*maxY+"px";
 }
 
-/* NO BUTTON */
+/* NOPE button */
 let clicks=0;
 noBtn.onclick=()=>{
-oops.currentTime=0;
-oops.play();
+feedback();
 
 clicks++;
 
@@ -150,23 +164,42 @@ el.classList.remove("fade-out");
 setTimeout(()=>{
 page.innerHTML=`
 <div class="anniversary">HAPPY 6TH LOVE ANNIVERSARY 💞</div>
-<button onclick="showYear(2021)">Start Journey</button>
+<div class="buttons">
+<button onclick="showYear(2021)">START</button>
+<button id="no2">NO</button>
+</div>
 `;
+
+setTimeout(()=>{
+const btn=document.getElementById("no2");
+let c=0;
+btn.onclick=()=>{
+feedback();
+c++;
+move(btn);
+let s=1-(c*0.08);
+if(s<0.3)s=0.3;
+btn.style.transform=`scale(${s})`;
+if(c>=10) btn.style.display="none";
+};
+},100);
+
 },10000);
 }
 
-/* YEARS */
+/* timeline text */
 const texts=[
-"Let’s step into 2021-2022 💫",
-"Our story continues ❤️",
-"More memories await",
-"Another year together",
-"Still growing stronger",
-"Forever continues"
+"Let’s move to 2021-2022 💫",
+"Now entering 2022-2023 ❤️",
+"Stepping into 2023-2024",
+"Moving ahead to 2024-2025",
+"Next stop 2025-2026",
+"Our journey continues..."
 ];
 
 let i=0;
 
+/* YEARS */
 function showYear(year){
 
 if(year>2026){ending();return;}
@@ -180,34 +213,29 @@ page.innerHTML=`
 <source src="${year}.mp4">
 </video>
 <p>${text}</p>
-<button onclick="showYear(${year+1})">Next ➜</button>
+<button onclick="showYear(${year+1})">NEXT ➜</button>
 `;
 }
 
-/* TYPE EFFECT FIXED */
-function typeEffect(text,el){
+/* typing */
+function type(text,el){
 let i=0;
-el.innerHTML="";
-function typing(){
+function t(){
 if(i<text.length){
-el.innerHTML+=text[i];
-i++;
-setTimeout(typing,40);
+el.innerHTML+=text[i++];
+setTimeout(t,40);
 }
 }
-typing();
+t();
 }
 
 /* FINAL */
 function ending(){
-
 page.innerHTML=`<div class="handwriting" id="final"></div>`;
-
 setTimeout(()=>{
-const el=document.getElementById("final");
-typeEffect(
+type(
 "This isn't gonna end until we are alive.\n\nLet's be together in every phase of life.\n\nI Love You Alot Mommy and I'll love you till I'm alive.",
-el
+document.getElementById("final")
 );
 },300);
 }
